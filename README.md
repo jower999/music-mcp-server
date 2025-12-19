@@ -8,6 +8,7 @@ A Model Context Protocol (MCP) server that allows controlling music playback thr
 - Skip to next/previous track
 - Get current track information
 - Manage playlists (create, add/remove tracks, list tracks, delete)
+- Device management (list devices, transfer playback)
 
 ## Setup
 

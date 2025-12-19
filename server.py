@@ -75,6 +75,28 @@ async def current_track() -> str:
         return f"Error: {str(e)}"
 
 @server.tool()
+async def get_devices() -> str:
+    """Get list of available Spotify devices."""
+    try:
+        devices = sp.devices()
+        device_info = []
+        for device in devices['devices']:
+            status = "Active" if device['is_active'] else "Inactive"
+            device_info.append(f"{device['name']} (ID: {device['id']}, Type: {device['type']}, {status})")
+        return "Available devices:\n" + "\n".join(device_info)
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+@server.tool()
+async def transfer_playback(device_id: str) -> str:
+    """Transfer playback to a specific device."""
+    try:
+        sp.transfer_playback(device_id)
+        return f"Transferred playback to device."
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+@server.tool()
 async def get_playlists() -> str:
     """Get user's playlists."""
     try:
