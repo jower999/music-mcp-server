@@ -1,6 +1,6 @@
-# Spotify MCP Server
+# Music MCP Server
 
-A Model Context Protocol (MCP) server that allows controlling Spotify playback through GitHub Copilot Chat.
+A Model Context Protocol (MCP) server that allows controlling music playback through GitHub Copilot Chat.
 
 ## Features
 
