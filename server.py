@@ -1,10 +1,6 @@
 import asyncio
 import os
-from typing import Any, Sequence
-from mcp.server import Server
-from mcp.types import TextContent, PromptMessage
-import mcp.server.stdio
-from mcp import Tool
+from mcp.server.fastmcp import FastMCP
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
@@ -23,9 +19,9 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     scope='user-read-playback-state,user-modify-playback-state,user-read-currently-playing,playlist-modify-public,playlist-modify-private,playlist-read-private'
 ))
 
-server = Server("spotify-mcp-server")
+app = FastMCP("music-mcp-server")
 
-@server.tool()
+@app.tool()
 async def play_music() -> str:
     """Play or resume music on Spotify."""
     try:
@@ -34,7 +30,7 @@ async def play_music() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def pause_music() -> str:
     """Pause music on Spotify."""
     try:
@@ -43,7 +39,7 @@ async def pause_music() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def next_track() -> str:
     """Skip to the next track."""
     try:
@@ -52,7 +48,7 @@ async def next_track() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def previous_track() -> str:
     """Go to the previous track."""
     try:
@@ -61,7 +57,7 @@ async def previous_track() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def current_track() -> str:
     """Get information about the currently playing track."""
     try:
@@ -74,7 +70,7 @@ async def current_track() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def get_devices() -> str:
     """Get list of available Spotify devices."""
     try:
@@ -87,7 +83,7 @@ async def get_devices() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def transfer_playback(device_id: str) -> str:
     """Transfer playback to a specific device."""
     try:
@@ -96,7 +92,7 @@ async def transfer_playback(device_id: str) -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def get_playlists() -> str:
     """Get user's playlists."""
     try:
@@ -108,7 +104,7 @@ async def get_playlists() -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def create_playlist(name: str, description: str = "", public: bool = True) -> str:
     """Create a new playlist."""
     try:
@@ -118,7 +114,7 @@ async def create_playlist(name: str, description: str = "", public: bool = True)
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def add_to_playlist(playlist_id: str, track_uri: str) -> str:
     """Add a track to a playlist by URI."""
     try:
@@ -127,7 +123,7 @@ async def add_to_playlist(playlist_id: str, track_uri: str) -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def remove_from_playlist(playlist_id: str, track_uri: str) -> str:
     """Remove a track from a playlist by URI."""
     try:
@@ -136,7 +132,7 @@ async def remove_from_playlist(playlist_id: str, track_uri: str) -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def get_playlist_tracks(playlist_id: str) -> str:
     """Get tracks in a playlist."""
     try:
@@ -149,7 +145,7 @@ async def get_playlist_tracks(playlist_id: str) -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-@server.tool()
+@app.tool()
 async def delete_playlist(playlist_id: str) -> str:
     """Delete (unfollow) a playlist."""
     try:
@@ -159,13 +155,6 @@ async def delete_playlist(playlist_id: str) -> str:
     except Exception as e:
         return f"Error: {str(e)}"
 
-async def main():
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            server.create_initialization_options()
-        )
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    import mcp.server.stdio
+    mcp.server.stdio.stdio_server()(app.to_server())

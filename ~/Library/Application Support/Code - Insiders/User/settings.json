@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "music": {
+      "command": "music-mcp-server"
+    }
+  }
+}
